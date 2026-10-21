@@ -36,7 +36,7 @@ export function Portfolio() {
     <header className="site-header">
       <button className="brand" onClick={() => go('inicio')} aria-label="Ir al inicio"><Mark small /><span>FP<span className="brand-dot">/</span>26</span></button>
       <nav className={menuOpen ? 'nav-links nav-open' : 'nav-links'} aria-label="Navegación principal">
-        {['inicio', 'perfil', 'proyectos', 'laboratorio', 'experiencia', 'contacto'].map((id, i) => <button key={id} onClick={() => go(id)}><span>0{i + 1}</span>{id}</button>)}
+        {['inicio', 'perfil', 'proyectos', 'laboratorio', 'experiencia', 'contacto'].map((id) => <button key={id} onClick={() => go(id)}>{id}</button>)}
       </nav>
       <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}>{menuOpen ? <X /> : <Menu />}</button>
       <button className="header-contact" onClick={() => go('contacto')}>Hablemos <ArrowUpRight data-icon="inline-end" /></button>

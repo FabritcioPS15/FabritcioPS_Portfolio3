@@ -1,12 +1,48 @@
+'use client'
+
 import Link from 'next/link'
-import { ArrowUpRight, Check, ChevronRight, Mail, Network, Send } from 'lucide-react'
+import { ArrowUpRight, Check, ChevronLeft, ChevronRight, Mail, Network, Search, Send, X } from 'lucide-react'
 import { Mark } from './site-chrome'
 import { projects, skills } from '@/lib/portfolio-data'
+import { useState, useEffect } from 'react'
 
 export function PageIntro({ number, label, title, children }: { number: string; label: string; title: React.ReactNode; children?: React.ReactNode }) { return <div className="page-intro section-wrap"><div className="section-kicker"><span>{number}</span><span>{label}</span></div><h1>{title}</h1>{children}</div> }
 export function ProjectVisual({ tone }: { tone: string }) { return <div className={`project-visual tone-${tone}`}><div className="preview-interface"><div className="mini-sidebar"><Mark small /><span /><span /><span /><span /></div><div className="mini-main"><div className="mini-heading"><i /><i /><i /></div><div className="mini-chart"><span /><span /><span /><span /><span /><span /></div><div className="mini-cards"><i /><i /><i /></div></div></div></div> }
 
-export function HomePage() { return <main><section className="hero section-wrap"><div className="hero-copy"><p className="eyebrow"><span className="status-dot" /> PORTAFOLIO PERSONAL · 2026</p><h1>Fabritcio<br /><em>Peña.</em></h1><p className="hero-lede">Tecnología que <span>resuelve</span><br /> problemas reales.</p><p className="hero-description">Desarrollo web, soporte TI y automatizaciones que convierten lo complejo en algo más claro, útil y humano.</p><div className="hero-actions"><Link className="button-primary" href="/proyectos">Explorar proyectos <ArrowUpRight /></Link><Link className="text-button" href="/sobre-mi">Conocer el enfoque <ChevronRight /></Link></div></div><div className="hero-art"><div className="orbit orbit-one" /><div className="orbit orbit-two" /><div className="art-index mono">/ system.profile</div><div className="fp-display"><Mark /><p className="mono">FABRITCIO<br /><span>PEÑA</span></p></div><div className="code-window"><div className="window-bar"><i /><i /><i /><span className="mono">workspace.tsx</span></div><div className="code-lines mono"><p><b>const</b> <span>focus</span> = <strong>&quot;useful&quot;</strong></p><p><b>const</b> <span>approach</span> = [</p><p className="indent"><strong>&quot;curious&quot;</strong>, <strong>&quot;precise&quot;</strong>,</p><p className="indent"><strong>&quot;human&quot;</strong></p><p>]</p></div></div><div className="art-tag mono">01 / BUILDING BETTER<br /><span>digital tools</span></div></div></section><section className="home-featured section-wrap"><div className="section-kicker"><span>01</span><span>PROYECTOS CULMINADOS / 05</span></div><div className="projects-heading"><h2>Trabajo que<br /><em>abre caminos.</em></h2><p>Una entrada breve a productos, herramientas y sistemas pensados para resolver algo específico.</p></div><div className="featured-grid">{projects.slice(0, 3).map((p, i) => <Link href={`/proyectos/${p.slug}`} className="featured-project" key={p.slug}><ProjectVisual tone={p.tone} /><span className="mono">0{i + 1} / {p.type}</span><h3>{p.name}</h3><p>{p.description}</p><ArrowUpRight /></Link>)}</div><Link className="text-button explore-all" href="/proyectos">Ver todos los proyectos <ArrowUpRight /></Link></section><section className="home-cta section-wrap"><p className="eyebrow">EL SIGUIENTE PASO</p><h2>La buena tecnología<br /><em>se siente natural.</em></h2><Link className="button-primary" href="/contacto">Iniciar conversación <Send /></Link></section></main> }
+export function HomePage() {
+  const [carouselIndex, setCarouselIndex] = useState(0)
+  const [itemsPerSlide, setItemsPerSlide] = useState(3)
+
+  useEffect(() => {
+    const updateItemsPerSlide = () => {
+      if (typeof window !== 'undefined') {
+        if (window.innerWidth < 800) {
+          setItemsPerSlide(1)
+        } else if (window.innerWidth < 1200) {
+          setItemsPerSlide(2)
+        } else {
+          setItemsPerSlide(3)
+        }
+      }
+    }
+
+    updateItemsPerSlide()
+    window.addEventListener('resize', updateItemsPerSlide)
+    return () => window.removeEventListener('resize', updateItemsPerSlide)
+  }, [])
+
+  const totalSlides = Math.ceil(projects.length / itemsPerSlide)
+
+  const nextSlide = () => setCarouselIndex((prev) => (prev + 1) % totalSlides)
+  const prevSlide = () => setCarouselIndex((prev) => (prev - 1 + totalSlides) % totalSlides)
+
+  const currentProjects = projects.slice(
+    carouselIndex * itemsPerSlide,
+    (carouselIndex + 1) * itemsPerSlide
+  )
+
+  return <main><section className="hero section-wrap"><div className="hero-copy"><p className="eyebrow"><span className="status-dot" /> PORTAFOLIO PERSONAL · 2026</p><h1>Fabritcio<br /><em>Peña.</em></h1><p className="hero-lede">Tecnología que <span>resuelve</span><br /> problemas reales.</p><p className="hero-description">Desarrollo web, soporte TI y automatizaciones que convierten lo complejo en algo más claro, útil y humano.</p><div className="hero-actions"><Link className="button-primary" href="/proyectos">Explorar proyectos <ArrowUpRight /></Link><Link className="text-button" href="/sobre-mi">Conocer el enfoque <ChevronRight /></Link></div></div><div className="hero-art"><div className="orbit orbit-one" /><div className="orbit orbit-two" /><div className="art-index mono">/ system.profile</div><div className="fp-display"><Mark /><p className="mono">FABRITCIO<br /><span>PEÑA</span></p></div><div className="code-window"><div className="window-bar"><i /><i /><i /><span className="mono">workspace.tsx</span></div><div className="code-lines mono"><p><b>const</b> <span>focus</span> = <strong>&quot;useful&quot;</strong></p><p><b>const</b> <span>approach</span> = [</p><p className="indent"><strong>&quot;curious&quot;</strong>, <strong>&quot;precise&quot;</strong>,</p><p className="indent"><strong>&quot;human&quot;</strong></p><p>]</p></div></div><div className="art-tag mono">01 / BUILDING BETTER<br /><span>digital tools</span></div></div></section><section className="home-featured section-wrap"><div className="section-kicker"><span>01</span><span>PROYECTOS CULMINADOS / {String(projects.length).padStart(2, '0')}</span></div><div className="projects-heading"><h2>Trabajo que<br /><em>abre caminos.</em></h2><p>Una entrada breve a productos, herramientas y sistemas pensados para resolver algo específico.</p></div><div className="carousel-container"><button className="carousel-button carousel-prev" onClick={prevSlide} disabled={totalSlides <= 1}><ChevronLeft /></button><div className={`featured-grid carousel-track ${itemsPerSlide === 1 ? 'items-1' : itemsPerSlide === 2 ? 'items-2' : 'items-3'}`}>{currentProjects.map((p, i) => <Link href={`/proyectos/${p.slug}`} className="featured-project" key={p.slug}><ProjectVisual tone={p.tone} /><div><span className="mono">{p.type} / {p.status}</span><h3>{p.name}</h3><p>{p.description}</p><div className="stack">{p.stack.map(item => <span key={item}>{item}</span>)}</div></div><ArrowUpRight /></Link>)}</div><button className="carousel-button carousel-next" onClick={nextSlide} disabled={totalSlides <= 1}><ChevronRight /></button></div>{totalSlides > 1 && <div className="carousel-dots">{Array.from({ length: totalSlides }).map((_, i) => <button key={i} className={`carousel-dot ${i === carouselIndex ? 'active' : ''}`} onClick={() => setCarouselIndex(i)} />)}</div>}<div className="home-cta section-wrap"><h2>¿Buscas algo<br /><em>específico?</em></h2><p>Explora el catálogo completo o usa el buscador para encontrar proyectos por tecnología, tipo o descripción.</p><Link className="button-primary" href="/proyectos">Ver todos los proyectos <ArrowUpRight /></Link></div></section></main>
+}
 
 export function AboutPage() { return <main><PageIntro number="01" label="PERFIL / APPROACH" title={<>Entre sistemas<br />y personas<span>.</span></>}><p className="intro-copy">Me muevo entre el desarrollo de aplicaciones, el soporte técnico y la automatización para encontrar soluciones que funcionan en el mundo real.</p></PageIntro><section className="story section-wrap"><div><span className="mono">/ MI FORMA DE TRABAJAR</span><h2>Ordenar el ruido para construir con intención.</h2></div><div><p className="lead">No construyo por construir. Me interesa entender el problema, ordenar el contexto y crear herramientas que hagan que el trabajo diario se sienta más sencillo.</p><p className="muted">Mi enfoque combina curiosidad técnica, comunicación clara y atención al detalle. Cada proyecto empieza con preguntas y termina en algo que puede ser usado, mantenido y mejorado.</p></div></section><section className="notes-section section-wrap"><div><span className="mono">01 — ORDENAR</span><p>Traducir necesidades en flujos entendibles.</p></div><div><span className="mono">02 — CONSTRUIR</span><p>Crear interfaces que respondan al contexto.</p></div><div><span className="mono">03 — MEJORAR</span><p>Iterar hasta que la tecnología sea natural.</p></div></section><section className="education section-wrap"><span className="mono">/ FORMACIÓN Y CURIOSIDAD</span><h2>Aprender también es<br /><em>parte del producto.</em></h2><p className="muted">La formación técnica continua y la experiencia resolviendo problemas operativos alimentan una mirada práctica: entender cómo las personas usan realmente las herramientas.</p></section></main> }
 
