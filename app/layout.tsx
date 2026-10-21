@@ -1,5 +1,6 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
+import { ScrollReveal } from '@/components/scroll-reveal'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -39,6 +40,7 @@ export default function RootLayout({
     <html lang="es">
       <body className="antialiased">
         {children}
+        <ScrollReveal />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
